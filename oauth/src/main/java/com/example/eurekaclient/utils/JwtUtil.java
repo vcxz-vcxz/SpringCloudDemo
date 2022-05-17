@@ -3,7 +3,9 @@ package com.example.eurekaclient.utils;
 import com.alibaba.fastjson.JSONObject;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
 import org.apache.commons.codec.binary.Base64;
 
@@ -26,7 +28,7 @@ public class JwtUtil {
     /**
      * 密钥
      */
-    private static final String SECRET = "lL3OvhkIPOKh+Vn9Avlkxw==";
+    private static final String SECRET = "WcrhJkCdqCWKJucDVj5oHk43gk2WcR21cw7Yp3uwGxk=";
 
     /**
      * 根据签发者生成JWT token
@@ -51,11 +53,11 @@ public class JwtUtil {
     }
 
     /**
-     * 根据载荷生成JWT token
+     * 使用配置的默认密钥，使用传入的载荷生成JWT token
      * @param claims 载荷
      * @return
      */
-    public static String getJwtByClaims(Map<String,Object> claims){
+    public static String getJwt(Map<String,Object> claims){
         SecretKey secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET));
         String token = Jwts.builder()
                 // 载荷
@@ -73,7 +75,7 @@ public class JwtUtil {
     }
 
     /**
-     * 根据解析JWT token,获取载荷
+     * 使用配置的默认密钥，解析JWT token,获取载荷
      * @param jwt
      * @return
      */
@@ -88,7 +90,44 @@ public class JwtUtil {
     }
 
     /**
-     * 读取JWT 载荷内容。不解析JWT
+     * 使用传入的密钥，传入的载荷生成JWT token
+     * @param claims 载荷
+     * @return
+     */
+    public static String getJwtWithKey(String key,Map<String,Object> claims){
+        SecretKey secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(key));
+        String token = Jwts.builder()
+                // 载荷
+                .setClaims(claims)
+                //设置唯一编号。
+                .setId(UUID.randomUUID().toString())
+                //签发时间
+                .setIssuedAt(new Date())
+                //过期时间
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRE_TIME))
+                //*(必须)设置签名 使用HS256算法，并设置SecretKey(字符串)
+                .signWith(secretKey)
+                .compact();
+        return token;
+    }
+
+    /**
+     * 使用传入的密钥，解析JWT token,获取载荷
+     * @param jwt
+     * @return
+     */
+    public static Claims parseJwtWithKey( String key,String jwt){
+        SecretKey secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(key));
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(jwt)
+                .getBody();
+        return claims;
+    }
+
+    /**
+     * 读取JWT 载荷内容。不使用密钥
      * @param token
      * @return
      */
@@ -109,6 +148,17 @@ public class JwtUtil {
             return null;
         }
         return JSONObject.parseObject(s);
+    }
+
+    /**
+     * 获取一个符合JWT安全要求的随机密钥
+     * @return
+     */
+    public static String getSecretKey(){
+        //HS256 or HS384 or HS512
+        SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+        String secretString = Encoders.BASE64.encode(key.getEncoded());
+        return  secretString;
     }
 
 }

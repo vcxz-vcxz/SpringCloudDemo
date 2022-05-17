@@ -157,12 +157,16 @@ class EurekaClientApplicationTests {
 
     @Test
     public void jwtTest() throws Exception{
-        JwtUtil jwtUtil = new JwtUtil();
         Map<String,Object> claims = new HashMap<>();
         claims.put("sub","aaaa");
-        String jwt = JwtUtil.getJwtByClaims(claims);
+        String jwt = JwtUtil.getJwt(claims);
         Claims claims1 = JwtUtil.parseJwt(jwt);
         JSONObject jsonObject = JwtUtil.parseSubscriber(jwt);
+        String jwt1 = JwtUtil.getJwt(claims1);
+        Claims claims2 = JwtUtil.parseJwt(jwt);
+        System.out.println(jwt);
+        System.out.println(jwt1);
+
     }
 
 }
