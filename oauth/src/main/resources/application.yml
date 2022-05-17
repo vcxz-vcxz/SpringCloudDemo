@@ -1,0 +1,17 @@
+server:
+  port: 8201 #运行端口号
+spring:
+  application:
+    name: oauth #服务名称
+  datasource:
+    druid:
+      url: "jdbc:mysql://localhost:3306/springcloud-demo?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&allowMultiQueries=true"
+      username: "root"
+      password: "root"
+eureka:
+  client:
+    register-with-eureka: true #注册到Eureka的注册中心
+    fetch-registry: true #获取注册实例列表
+    service-url:
+      defaultZone: http://localhost:8100/eureka/ #配置注册中心地址
+

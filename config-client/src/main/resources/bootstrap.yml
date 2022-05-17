@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: config-client
+  cloud:
+    config: #Config客户端配置
+      profile: dev #启用配置后缀名称
+      label: dev #分支名称
+      uri: http://localhost:8102/config #配置中心地址
+      name: config-client #配置文件名称
+#      discovery:
+#        enabled: true
+#        service-id: config-server
+
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8100/eureka/

@@ -1,0 +1,8 @@
+8100:eureka
+8101:gateway
+8102:config-server
+
+8201:oauth
+8202:config-client
+8203:feign-service
+8204:swagger
